@@ -1,0 +1,88 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies & package managers
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+.npm
+.pnpm-store
+.cache
+
+# turbo / next.js build caches
+/.next
+/.next/**
+.next.cache
+/.turbo
+/out
+
+# production builds
+/build
+/dist
+/tmp
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.pem
+*.pid
+*.seed
+*.tgz
+*.swp
+*.swo
+*.orig
+.eslintcache
+.stylelintcache
+*.log
+*.log.*
+.lerna_debug.log
+
+# IDE & editor folders
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.iml
+.history/
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# coverage & reports
+coverage/
+*.lcov
+reports/
+
+# env files (can opt-in for committing if needed)
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# storybook/playwright artifacts
+storybook-static
+playwright-report
+test-results
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

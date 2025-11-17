@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wong Kang</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="cursor-effect-area"></div>
+    <div class="main-container">
+        <nav class="side-nav">
+            <div class="nav-header">
+                <div class="profile-section">
+                    <img src="images/logo.png" alt="Wong Kang Logo" class="profile-image">
+                    <h2>Wong Kang</h2>
+                </div>
+                <p>Computer Science Student at SUTD</p>
+                <p>Applying technology to dissect challenges and build innovative solutions.</p>
+            </div>
+            <ul>
+                <li><a href="#about" class="nav-link active" data-section="about">
+                    <span class="nav-line"></span><span class="nav-text">About</span>
+                </a></li>
+                <li><a href="#experience" class="nav-link" data-section="experience">
+                    <span class="nav-line"></span><span class="nav-text">Experience</span>
+                </a></li>
+                <li><a href="#projects" class="nav-link" data-section="projects">
+                    <span class="nav-line"></span><span class="nav-text">Projects</span>
+                </a></li>
+            </ul>
+            <div class="social-links-nav">
+                <a href="https://github.com/wongkang01" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/kang-wong-b8a05a226" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:wongkangmain@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </nav>
+
+        <div class="content-container">
+            <section id="about" class="section">
+                <div class="content">
+                    <img src="images/profile_img.jpg" alt="Wong Kang Profile" class="about-profile-image">
+                    <p>A second-year Computer Science student with keen interests in Fintech and a passion for leveraging Artificial Intelligence to solve real-world problems and improve user experiences.</p>
+                </div>
+            </section>
+
+            <section id="experience" class="section">
+                <div class="content">
+                    
+                    <div class="experience-grid">
+                        <div class="card">
+                            <div class="card-date-column">
+                                <span class="date">Jun 2023 - Sep 2023</span>
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3>Information Technology Operations Project Intern <span class="title-separator">•</span> <span class="company-name">NCS Group</span></h3>
+                                </div>
+                                <p>Developed an automated system to retrieve and categorize Enterprise Hardware End-of-Life (EOL) dates, significantly reducing manual processing time. Implemented Python scripts with OpenAI API, BeautifulSoup, and Requests for data tasks, Pandas for organization, and Streamlit for an interactive demo. Deployed on Amazon EC2 for team accessibility and streamlined EOL tracking.</p>
+                                <div class="tags">
+                                    <span>Python</span>
+                                    <span>OpenAI API</span>
+                                    <span>BeautifulSoup</span>
+                                    <span>Requests</span>
+                                    <span>Pandas</span>
+                                    <span>Streamlit</span>
+                                    <span>AWS EC2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="projects" class="section">
+                <div class="content">
+                    
+                    <div class="projects-grid">
+                        <div class="card">
+                            <div class="project-thumbnail-column">
+                                <img src="images/modsutd.jpg" alt="MODSUTD Module Planning Thumbnail" class="project-thumbnail">
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3><a href="https://mo-dutd-d796.vercel.app/" target="_blank" rel="noopener noreferrer">MODSUTD - University Module Planning Website <span class="arrow">↗</span></a></h3>
+                                    <span class="date">May 2025 - Present</span>
+                                </div>
+                                <p>Developing the backend for a university module planning platform. Designing and implementing the API for seamless frontend communication. Managing data with Drizzle ORM connected to PostgreSQL hosted on Supabase. Integrating Clerk for secure student ID-based authentication. Focusing on a normalized database schema and robust data services to power module planning and management features.</p>
+                                <div class="tags">
+                                    <span>Next.js</span>
+                                    <span>tRPC</span>
+                                    <span>Drizzle ORM</span>
+                                    <span>PostgreSQL</span>
+                                    <span>Supabase</span>
+                                    <span>Clerk</span>
+                                </div>
+                                <div class="project-links">
+                                    <a href="https://mo-dutd-d796.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn">View Project <i class="fas fa-external-link-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="project-thumbnail-column">
+                                <img src="images/optistaff.png" alt="OptiStaff Platform Thumbnail" class="project-thumbnail">
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3><a href="https://docs.google.com/document/d/18TcN-RM9lz2plEzi-OJ2cDJjgj0Ky7N9939R8m5Ct9k/edit?usp=sharing" target="_blank" rel="noopener noreferrer">OptiStaff - Intelligent Staffing & Scheduling Platform <span class="arrow">↗</span></a></h3>
+                                    <span class="date">May 2025 - Present</span>
+                                </div>
+                                <p>Developing the full stack for OptiStaff, an intelligent web platform designed to optimize flexible staffing and scheduling for workers and businesses. Building the React/Next.js frontend for intuitive user and client interfaces, and the backend API with Node.js. Managing complex data via PostgreSQL with Prisma ORM. Designing the data architecture to support automated scheduling logic and real-time updates. This project focuses on streamlining temporary staffing through smart automation and user-centric design.</p>
+                                <div class="tags">
+                                    <span>React</span>
+                                    <span>Next.js</span>
+                                    <span>Node.js</span>
+                                    <span>PostgreSQL</span>
+                                    <span>Prisma ORM</span>
+                                </div>
+                                <div class="project-links">
+                                    <a href="https://docs.google.com/document/d/18TcN-RM9lz2plEzi-OJ2cDJjgj0Ky7N9939R8m5Ct9k/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn">View Project <i class="fas fa-external-link-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="project-thumbnail-column">
+                                <img src="images/adminless.jpg" alt="AdminLess.ai Virtual Receptionist Thumbnail" class="project-thumbnail">
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3><a href="https://www.adminless.ai/" target="_blank" rel="noopener noreferrer">AdminLess.ai – AI-Powered Virtual Receptionist for Clinics <span class="arrow">↗</span></a></h3>
+                                    <span class="date">March 2025 – Present</span>
+                                </div>
+                                <p>Designed and developed the responsive front-end of an AI-powered web solution aimed at reducing clinic administrative workload. Utilized Next.js with TypeScript for scalable architecture and Tailwind CSS for modern, intuitive UI. </p>
+                                <div class="tags">
+                                    <span>Next.js</span>
+                                    <span>TypeScript</span>
+                                    <span>Tailwind CSS</span>
+                                </div>
+                                <div class="project-links">
+                                    <a href="https://www.adminless.ai/" target="_blank" rel="noopener noreferrer" class="btn">View Project <i class="fas fa-external-link-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="project-thumbnail-column">
+                                <img src="images/wandr.png" alt="Wandr App Thumbnail" class="project-thumbnail">
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3><a href="https://linkthreelala.my.canva.site/wandr" target="_blank" rel="noopener noreferrer">Wandr - Social Media x Travel Planner App <span class="arrow">↗</span></a></h3>
+                                    <span class="date">Feb 2025 - April 2025</span>
+                                </div>
+                                <p>Designed and developed an Android application integrating social media with travel planning. Focused on intuitive UI/UX using Figma, a robust backend with Java, and efficient data management via MySQL and Firebase. Customized XML layouts enhanced visual design and user experience. Achieved 1st Prize in Singtel Information Systems and Programming Awards 2025.</p>
+                                <div class="tags">
+                                    <span>Java</span>
+                                    <span>Figma</span>
+                                    <span>MySQL</span>
+                                    <span>Firebase</span>
+                                    <span>XML</span>
+                                    <span>Android</span>
+                                </div>
+                                <div class="project-links">
+                                    <a href="https://linkthreelala.my.canva.site/wandr" class="btn">View Project <i class="fas fa-external-link-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="project-thumbnail-column">
+                                <img src="images/crop_yield_prediction.jpg" alt="Crop Yield Prediction Model Thumbnail" class="project-thumbnail">
+                            </div>
+                            <div class="card-content-column">
+                                <div class="card-title-section">
+                                    <h3><a href="https://wongkang01.github.io/crop_yield_prediction/" target="_blank" rel="noopener noreferrer">Crop Yield Prediction Model <span class="arrow">↗</span></a></h3>
+                                    <span class="date">Nov 2024</span>
+                                </div>
+                                <p>Developed a multiple linear regression model using gradient descent to predict crop yield, supporting policy planning for food supply sustainability. Cleaned and standardized data from various sources using Pandas and refined the model through iterative feature engineering. Visualized data trends and model performance with Matplotlib.</p>
+                                <div class="tags">
+                                    <span>Python</span>
+                                    <span>Pandas</span>
+                                    <span>Matplotlib</span>
+                                    <span>Machine Learning</span>
+                                </div>
+                                <div class="project-links">
+                                    <a href="https://wongkang01.github.io/crop_yield_prediction/" class="btn">View Project <i class="fas fa-external-link-alt"></i></a>
+                                    <a href="https://github.com/wongkang01/crop_yield_prediction" class="btn">GitHub <i class="fab fa-github"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="contact" class="section">
+                <!-- Contact section can be re-added or redesigned later if needed -->
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

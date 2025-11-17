@@ -1,0 +1,634 @@
+:root {
+  --bg-color: #1a1a1a; /* Dark grey background */
+  --text-color: #f5f5f5; /* Very light grey text */
+  --accent-color: #14b8a6; /* Teal accent */
+  --hover-color: #2a2a2a; /* Lighter grey */
+  --card-bg-color: rgba(42, 42, 42, 0.4); /* Medium grey for cards - more transparent */
+  --section-padding: 60px 0;
+  --teal-accent: var(--accent-color); /* Teal accent */
+  --lightest-slate: #ffffff; /* Pure white for highest contrast */
+  --slate: #b0b0b0; /* Light grey for secondary text */
+  --light-slate: #d4d4d4; /* Very light grey */
+  --secondary-text: #888888; /* Medium grey for tertiary text */
+  --spotlight-color: rgba(255, 255, 255, 0.08); /* Subtle white glow */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color); /* Deep black background */
+  color: var(--text-color); /* Light gray text */
+  position: relative; /* For seamless spotlight effect */
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+  /* Hide body scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.main-container {
+  display: flex;
+  width: 100%;
+  max-width: 1440px; /* Max width for the centered content */
+  margin: 0 auto; /* Center the container */
+  position: relative; /* For proper positioning of fixed elements */
+  min-height: 100vh; /* Ensure container takes full height */
+}
+
+/* Side Navigation - Left Side, Static */
+.side-nav {
+  width: 30%; /* Adjusted width */
+  max-width: 440px; /* Adjusted max-width */
+  padding: 50px 40px;
+  background-color: transparent; /* Transparent for seamless spotlight effect */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes social links to bottom */
+  height: 100vh; /* Full viewport height */
+  box-sizing: border-box;
+  position: sticky; /* Use sticky instead of fixed */
+  top: 0;
+  overflow-y: auto; /* Added for potential overflow */
+  /* Hide scrollbar for side nav */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  z-index: 10; /* Ensure it stays on top */
+}
+
+.side-nav::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.nav-header h1 {
+  font-size: 2.8em; /* Larger name */
+  color: var(--lightest-slate); /* Light gray for name */
+  margin-bottom: 0.2em;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 1em; /* Increased bottom margin for better spacing */
+}
+
+.profile-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain; /* For logo */
+  transition: opacity 0.3s ease;
+}
+
+.profile-image:hover {
+  opacity: 0.8;
+}
+
+.profile-section h2 {
+  font-size: 2.8em;
+  color: var(--lightest-slate);
+  margin: 0;
+}
+
+.nav-header p {
+  font-size: 1.1em;
+  color: var(--slate); /* Medium gray for title/description */
+  margin-bottom: 0.8em; /* More consistent spacing */
+  line-height: 1.4; /* Better line height for readability */
+}
+
+.nav-header p:last-of-type {
+  margin-bottom: 2.5em; /* Consistent space before nav items */
+}
+
+.side-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-nav ul li a {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  color: var(--slate); /* Medium gray for nav items */
+  text-decoration: none;
+  font-size: 0.9em; /* Smaller font for nav items */
+  letter-spacing: 0.1em; /* Letter spacing for nav items */
+  transition: color 0.3s ease, padding-left 0.3s ease;
+}
+
+.nav-line {
+  display: inline-block;
+  width: 30px; /* Default line width */
+  height: 1px;
+  background-color: var(--slate); /* Medium gray for line */
+  margin-right: 15px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.side-nav ul li a:hover .nav-line,
+.side-nav ul li a.active .nav-line {
+  width: 60px; /* Line width on hover/active */
+  background-color: var(--accent-color); /* Teal for active/hover line */
+}
+
+.side-nav ul li a:hover .nav-text,
+.side-nav ul li a.active .nav-text {
+  color: var(--accent-color); /* Teal for active/hover text */
+}
+
+.social-links-nav {
+  margin-top: auto; /* Pushes to the bottom if not enough content above */
+  padding-top: 20px;
+}
+
+.social-links-nav a {
+  color: var(--slate); /* Medium gray for icons */
+  font-size: 1.5em;
+  margin-right: 20px;
+  transition: color 0.3s ease;
+}
+
+.social-links-nav a:hover {
+  color: var(--accent-color); /* Teal on hover */
+}
+
+/* Content Area - Right Side, Scrollable */
+.content-container {
+  width: 70%; /* Adjusted width */
+  padding: 50px 40px;
+  box-sizing: border-box;
+  background-color: transparent; /* Transparent for seamless spotlight effect */
+  /* Hide scrollbar while maintaining scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.content-container::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.section {
+  min-height: 100vh; /* Each section takes full viewport height */
+  display: flex;
+  align-items: center; /* Center content vertically */
+  padding-bottom: 40px; /* Spacing between sections */
+}
+
+#about {
+  justify-content: center; /* Center about section content */
+}
+
+#about .content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.about-profile-image {
+  width: 220px !important; /* Force override any conflicting styles */
+  height: 220px !important; /* Force override any conflicting styles */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-color);
+  margin-bottom: 2em;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.about-profile-image:hover {
+  border-color: var(--lightest-slate);
+  transform: scale(1.05);
+}
+
+.section.hidden {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.section.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section h1 {
+  color: var(--lightest-slate);
+  font-size: 2.2em;
+  margin-bottom: 2em;
+  font-weight: 600;
+}
+
+.section .content {
+  max-width: none; /* Remove any width restrictions */
+}
+
+.section .content p {
+  color: var(--slate);
+  font-size: 1.1em;
+  line-height: 1.7;
+  margin-bottom: 1.5em;
+}
+
+/* Card Styling (for Experience and Projects) */
+.card {
+  background-color: transparent; /* Initially transparent */
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 8px; /* Rounded corners for cards */
+  transition: background-color 0.3s ease-out, box-shadow 0.3s ease-out, transform 0.3s ease-out, border-color 0.3s ease-out;
+  border: 1px solid transparent; /* For smooth transition */
+  display: flex; /* Enable flexbox for layout */
+  gap: 20px; /* Add gap between thumbnail and content */
+  cursor: pointer; /* Indicate interactivity */
+  opacity: 0; /* Initially hidden for animation */
+  transform: translateY(30px); /* Start slightly below */
+  transition: background-color 0.3s ease-out, opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.card.animate-in {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Move to original position */
+}
+
+.card:hover {
+  background-color: var(--card-bg-color); /* Semi-transparent background on hover */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); /* 3D bevel effect */
+  transform: translateY(-2px); /* Slight lift effect */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle highlight border */
+}
+
+.project-thumbnail-column {
+  flex: 0 0 150px; /* Fixed width for thumbnail column */
+  overflow: hidden; /* Hide overflow if image is larger */
+}
+
+.project-thumbnail {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  max-height: 150px; /* Max height for the thumbnail */
+  object-fit: cover; /* Cover the area, cropping if necessary */
+  border-radius: 4px; /* Slightly rounded corners for the image */
+  border: 3px solid var(--hover-color); /* Increased outline border */
+  transition: transform 0.3s ease, border-color 0.3s ease, filter 0.3s ease;
+}
+
+.card:hover .project-thumbnail {
+  transform: scale(1.02); /* Slight zoom effect on card hover */
+  border-color: var(--accent-color); /* Teal border on hover */
+  filter: brightness(1.1); /* Slightly brighten the image */
+}
+
+.card-content-column {
+  flex: 1; /* Allow content to take remaining space */
+}
+
+.card-date-column {
+  flex: 0 0 150px; /* Fixed width for date column */
+  display: flex;
+  align-items: flex-start; /* Align to top */
+  padding-top: 5px;
+}
+
+.card-date-column .date {
+  font-size: 0.9em;
+  color: var(--secondary-text); /* Medium grey for dates */
+  white-space: nowrap; /* Prevent date from wrapping */
+  transition: color 0.3s ease;
+  font-weight: 500;
+}
+
+.card:hover .card-date-column .date {
+  color: var(--accent-color); /* Teal color on card hover */
+}
+
+.card-title-section {
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-title-section {
+  transform: translateX(2px); /* Slight shift on hover for emphasis */
+}
+
+.card-header h3, /* Keep this for backward compatibility if any h3 is directly in card-header */
+.card-title-section h3 {
+  font-size: 1.3em;
+  color: var(--lightest-slate); /* Pure white for card titles */
+  margin: 0;
+  line-height: 1.4;
+}
+
+.card-title-section h3 a {
+  color: var(--lightest-slate); /* Pure white for project titles */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.card-title-section h3 a:hover {
+  color: var(--accent-color); /* Teal accent on hover */
+}
+
+.card-title-section h3 .arrow {
+  color: var(--accent-color); /* Teal accent for arrow */
+  display: inline-block;
+  transition: transform 0.3s ease, color 0.3s ease;
+  margin-left: 5px;
+}
+
+.card:hover .card-title-section h3 .arrow {
+  transform: translateX(3px) translateY(-3px); /* Arrow animation on hover */
+}
+
+.card-title-section .title-separator {
+  color: var(--slate);
+  margin: 0 0.25em;
+}
+
+.card-title-section .company-name,
+.card-title-section .project-subtitle {
+  color: var(--slate);
+  font-weight: normal;
+}
+
+.card-header h4 { /* This might be deprecated with the new structure but kept for safety */
+  font-size: 1em;
+  color: var(--slate); /* Medium grey for sub-headers */
+  margin: 0;
+  font-weight: normal;
+}
+
+.card .date { /* This specific .date inside .card might be less used now, but kept for safety */
+  font-size: 0.9em;
+  color: var(--secondary-text); /* Medium grey for dates */
+  white-space: nowrap; /* Prevent date from wrapping */
+}
+
+.card .date { /* This specific .date inside .card might be less used now, but kept for safety */
+  font-size: 0.9em;
+  color: var(--secondary-text); /* Medium grey for dates */
+  white-space: nowrap; /* Prevent date from wrapping */
+}
+
+.card p {
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: var(--slate); /* Light grey for paragraph text */
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+.card:hover p {
+  color: var(--light-slate); /* Slightly brighter text on card hover */
+}
+
+.tags span {
+  display: inline-block;
+  background-color: rgba(20, 184, 166, 0.15); /* Teal accent background with low opacity */
+  color: var(--accent-color); /* Teal accent text color */
+  padding: 5px 10px;
+  border-radius: 15px; /* Pill shape */
+  font-size: 0.8em;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(20, 184, 166, 0.3); /* Subtle teal border */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.tags span:hover {
+  background-color: rgba(20, 184, 166, 0.25); /* Slightly more opaque on hover */
+  transform: translateY(-1px); /* Slight lift effect */
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3); /* Glowing shadow */
+}
+
+.card:hover .tags span {
+  background-color: rgba(20, 184, 166, 0.2); /* Enhanced background when card is hovered */
+}
+
+/* Project links styling */
+.project-links {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-links .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  background-color: rgba(20, 184, 166, 0.1);
+  color: var(--accent-color);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.85em;
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  transition: all 0.3s ease;
+}
+
+.project-links .btn:hover {
+  background-color: rgba(20, 184, 166, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.card-title-section .date {
+  display: block;
+  font-size: 0.9em;
+  color: var(--secondary-text);
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 992px) { /* Tablet and smaller */
+  .main-container {
+    flex-direction: column;
+    height: auto;
+    overflow: auto; /* Allow body scroll on small screens */
+  }
+
+  .side-nav {
+    width: 100%;
+    position: static; /* Remove sticky positioning */
+    height: auto; /* Auto height */
+    max-width: none;
+    padding: 30px 20px;
+  }
+
+  .nav-header p:last-of-type {
+    margin-bottom: 1.5em;
+  }
+
+  .content-container {
+    width: 100%;
+    height: auto; /* Auto height */
+    overflow-y: visible; /* Remove internal scroll */
+    padding: 30px 20px;
+  }
+
+  /* Adjust card layout for tablet */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card .date {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  /* Stack project cards vertically on tablet */
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-thumbnail-column,
+  .card-content-column,
+  .card-date-column {
+    width: 100%;
+    flex: none;
+  }
+
+  .project-thumbnail-column {
+    margin-bottom: 15px;
+  }
+
+  .card-date-column {
+    margin-bottom: 10px;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 768px) { /* Mobile */
+  .nav-header h1 {
+    font-size: 2.2em;
+  }
+  .profile-section h2 {
+    font-size: 2.2em;
+  }
+  .profile-image {
+    width: 50px;
+    height: 50px;
+  }
+  .nav-header p {
+    font-size: 1em;
+  }
+  .side-nav ul li a {
+    font-size: 0.85em;
+  }
+  .card-header h3 {
+    font-size: 1.15em;
+  }
+  .card p {
+    font-size: 0.9em;
+  }
+  .tags span {
+    font-size: 0.75em;
+  }
+
+  /* Mobile layout for project and experience cards */
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* For project cards - reorder elements for mobile */
+  #projects .card .card-content-column {
+    order: 1; /* Content first */
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  #projects .card .project-thumbnail-column {
+    order: 2; /* Image second */
+    width: 100%;
+    flex: none;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  #projects .card .project-thumbnail {
+    width: 100%;
+    max-width: 300px; /* Limit maximum width */
+    height: auto;
+    object-fit: cover;
+  }
+
+  /* For experience cards - keep content layout but stack vertically */
+  #experience .card .card-date-column {
+    order: 1;
+    flex: none;
+    width: 100%;
+    margin-bottom: 10px;
+    padding-top: 0;
+  }
+
+  #experience .card .card-content-column {
+    order: 2;
+    width: 100%;
+  }
+
+  /* Ensure card title section has proper spacing on mobile */
+  .card-title-section {
+    margin-bottom: 15px;
+  }
+
+  .card-title-section .date {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85em;
+  }
+}
+
+/* Background cursor effect - subtle spotlight behind content */
+.cursor-effect-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Behind everything */
+  pointer-events: none; /* Allows clicks to pass through */
+  background: var(--bg-color); /* Dark grey background */
+  transition: background 0.2s ease-out; /* Smooth transition for cursor effect */
+}
+
+.cursor-effect-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(255, 255, 255, 0.08) 0%, 
+    rgba(255, 255, 255, 0.04) 30%, 
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.cursor-effect-area.active::before {
+  opacity: 1;
+}
