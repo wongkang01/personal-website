@@ -39,7 +39,7 @@ export function NavSidebar({
             priority
           />
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-teal-300">Portfolio</p>
+            <p className="text-xs uppercase tracking-[0.4em] text-teal-300"></p>
             <h1 className="mt-1 text-3xl font-semibold text-white">Wong Kang</h1>
           </div>
         </div>

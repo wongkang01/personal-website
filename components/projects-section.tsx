@@ -40,8 +40,8 @@ export function ProjectsSection({
   };
 
   return (
-    <section id="projects" className="space-y-10">
-      <div className="space-y-4">
+    <section id="projects" data-section="projects" className="space-y-10 py-16">
+      <div data-projects-heading className="space-y-4">
         <p className="text-xs uppercase tracking-[0.5em] text-teal-300">Projects</p>
         <h2 className="text-3xl font-semibold text-white md:text-4xl">
           Case studies with their own storytelling space
@@ -53,6 +53,7 @@ export function ProjectsSection({
       </div>
 
       <div
+        data-projects-filters
         className={clsx(
           "rounded-[32px] border border-white/5 bg-gradient-to-r from-white/5 via-transparent to-white/10 transition-all shadow-[0_25px_80px_-40px_rgba(15,118,110,0.8)] backdrop-blur dark:from-black/40 dark:to-black/10",
           filterPanelOpen ? "p-6" : "p-3"
@@ -110,16 +111,20 @@ export function ProjectsSection({
       </div>
 
       {projects.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-white/10 p-10 text-center text-sm text-zinc-400">
+        <p
+          data-projects-empty
+          className="rounded-3xl border border-dashed border-white/10 p-10 text-center text-sm text-zinc-400"
+        >
           No projects match that filter yet. Try another tag or clear your search.
         </p>
       ) : (
-        <div className="space-y-10">
+        <div data-projects-list className="space-y-10">
           {projects.map((project) => {
             const isExpanded = expandedCards.has(project.slug);
             return (
               <article
                 key={project.slug}
+                data-project-card
                 className="project-card group flex flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-gradient-to-b from-white/5 via-black/10 to-black/30 text-white shadow-[0_35px_120px_-45px_rgba(20,184,166,0.8)] transition-transform duration-500 hover:-translate-y-2 hover:border-teal-400/60"
               >
                 <div className="relative aspect-[16/9] w-full overflow-hidden">

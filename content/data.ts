@@ -12,6 +12,10 @@ export type Experience = {
   summary: string;
   highlights: string[];
   tags: string[];
+  logo?: {
+    src: string;
+    alt: string;
+  };
 };
 
 export type ProjectLink = {
@@ -86,6 +90,10 @@ export const experiences: Experience[] = [
       "Gemini",
       "Python",
     ],
+    logo: {
+      src: "/images/aisg.png",
+      alt: "AI Singapore logo",
+    },
   },
   {
     id: "ncs-it-ops",
@@ -107,6 +115,10 @@ export const experiences: Experience[] = [
       "Streamlit",
       "AWS EC2",
     ],
+    logo: {
+      src: "/images/NCS-logo.png",
+      alt: "NCS Group logo",
+    },
   },
 ];
 
@@ -151,7 +163,7 @@ export const projects: Project[] = [
     links: [
       {
         label: "Product brief",
-        href: "https://docs.google.com/document/d/18TcN-RM9lz2plEzi-OJ2cDJjgj0Ky7N9939R8m5Ct9k/edit?usp=sharing",
+        href: "https://optistaff-portfolio.vercel.app/#tech-stack",
         type: "external",
       },
     ],

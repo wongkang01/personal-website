@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "Wong Kang · Product-focused Engineer",
   description:
     "Portfolio for Wong Kang — showcasing AI-infused, Next.js-powered products, internships, and award-winning projects.",
+  icons: {
+    icon: { url: "/images/logo.png", type: "image/png" },
+    shortcut: { url: "/images/logo.png", type: "image/png" },
+    apple: { url: "/images/logo.png", type: "image/png" },
+  },
   openGraph: {
     title: "Wong Kang · Product-focused Engineer",
     description:

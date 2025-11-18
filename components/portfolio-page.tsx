@@ -90,51 +90,322 @@ export function PortfolioPage({ experiences, projects, socialLinks }: PortfolioP
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReducedMotion) return;
 
-      const sectionTweens: gsap.core.Tween[] = [];
-      const sections = gsap.utils.toArray<HTMLElement>("section[id]");
-      sections.forEach((section) => {
-        const tween = gsap.fromTo(
-          section,
-          { opacity: 0, yPercent: 20, scale: 0.96, filter: "blur(12px)" },
-          {
-            opacity: 1,
+      const ctx = gsap.context(() => {
+        type ScrollAnimationConfig = {
+          trigger: string | Element | null;
+          elements: HTMLElement[];
+          start?: string;
+          end?: string;
+          initial: gsap.TweenVars;
+          enter: gsap.TweenVars;
+          leave: gsap.TweenVars;
+        };
+
+        type IndividualAnimationConfig = {
+          elements: HTMLElement[];
+          start?: string;
+          end?: string;
+          endForNext?: string;
+          initial: gsap.TweenVars;
+          enter: gsap.TweenVars;
+          leave: gsap.TweenVars;
+        };
+
+        const createScrollAnimation = ({
+          trigger,
+          elements,
+          start = "top 70%",
+          end = "bottom 45%",
+          initial,
+          enter,
+          leave,
+        }: ScrollAnimationConfig) => {
+          if (!elements.length || !trigger) return;
+          const triggerElement = typeof trigger === "string" ? document.querySelector(trigger) : trigger;
+          if (!triggerElement) return;
+
+          gsap.set(elements, initial);
+
+          const play = () =>
+            gsap.to(elements, {
+              ...enter,
+              overwrite: "auto",
+            });
+
+          const hide = () =>
+            gsap.to(elements, {
+              ...leave,
+              overwrite: "auto",
+            });
+
+          ScrollTrigger.create({
+            trigger: triggerElement,
+            start,
+            end,
+            onEnter: play,
+            onEnterBack: play,
+            onLeave: hide,
+            onLeaveBack: hide,
+          });
+        };
+
+        const createIndividualScrollAnimations = ({
+          elements,
+          start = "top 80%",
+          end = "bottom top",
+          endForNext = "center center",
+          initial,
+          enter,
+          leave,
+        }: IndividualAnimationConfig) => {
+          if (!elements.length) return;
+
+          elements.forEach((element, index) => {
+            gsap.set(element, initial);
+
+            const nextElement = elements[index + 1];
+            const endValue = nextElement ? endForNext : end;
+
+            const play = () =>
+              gsap.to(element, {
+                ...enter,
+                overwrite: "auto",
+              });
+
+            const hide = () =>
+              gsap.to(element, {
+                ...leave,
+                overwrite: "auto",
+              });
+
+            ScrollTrigger.create({
+              trigger: element,
+              start,
+              end: endValue,
+              endTrigger: nextElement ?? element,
+              onEnter: play,
+              onEnterBack: play,
+              onLeave: hide,
+              onLeaveBack: hide,
+            });
+          });
+        };
+
+        const aboutCopyPieces = gsap.utils.toArray<HTMLElement>("#about [data-about-copy] > *");
+        const aboutPortrait = gsap.utils.toArray<HTMLElement>("#about [data-about-photo]");
+
+        createScrollAnimation({
+          trigger: "#about",
+          elements: aboutCopyPieces,
+          start: "top 80%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 20, filter: "blur(12px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.9,
+            ease: "power3.out",
+            stagger: 0.08,
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -8,
+            filter: "blur(10px)",
+            duration: 0.5,
+            ease: "power2.out",
+            stagger: { each: 0.05, from: "end" },
+          },
+        });
+
+        createScrollAnimation({
+          trigger: "#about",
+          elements: aboutPortrait,
+          start: "top 80%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 12, scale: 0.94, filter: "blur(10px)" },
+          enter: {
+            autoAlpha: 1,
             yPercent: 0,
             scale: 1,
             filter: "blur(0px)",
-            duration: 1.2,
-            ease: "power4.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 80%",
-              once: true,
-            },
-          }
+            duration: 1,
+            ease: "power3.out",
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -6,
+            scale: 0.97,
+            filter: "blur(10px)",
+            duration: 0.5,
+            ease: "power2.out",
+          },
+        });
+
+        const experienceHeadingPieces = gsap.utils.toArray<HTMLElement>(
+          "#experience [data-exp-heading] > *"
         );
-        sectionTweens.push(tween);
-      });
+        const experienceCards = gsap.utils.toArray<HTMLElement>("#experience [data-exp-card]");
 
-      const projectBatch = ScrollTrigger.batch(".project-card", {
-        start: "top 85%",
-        onEnter: (batch) => {
-          gsap.fromTo(
-            batch,
-            { opacity: 0, yPercent: 25, scale: 0.94 },
-            {
-              opacity: 1,
-              yPercent: 0,
-              scale: 1,
-              duration: 1,
-              ease: "power4.out",
-              stagger: 0.12,
-            }
-          );
-        },
-      });
+        createScrollAnimation({
+          trigger: "#experience",
+          elements: experienceHeadingPieces,
+          start: "top 70%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 15, filter: "blur(10px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            ease: "power3.out",
+            stagger: 0.08,
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -6,
+            filter: "blur(10px)",
+            duration: 0.5,
+            ease: "power2.out",
+            stagger: { each: 0.06, from: "end" },
+          },
+        });
 
-      return () => {
-        sectionTweens.forEach((tween) => tween.kill());
-        projectBatch.forEach((trigger) => trigger.kill());
-      };
+        createScrollAnimation({
+          trigger: "#experience",
+          elements: experienceCards,
+          start: "top 70%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 15, filter: "blur(10px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.15,
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -8,
+            filter: "blur(10px)",
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: { each: 0.08, from: "end" },
+          },
+        });
+
+        const projectsHeadingPieces = gsap.utils.toArray<HTMLElement>(
+          "#projects [data-projects-heading] > *"
+        );
+        const projectsFilters = gsap.utils.toArray<HTMLElement>("#projects [data-projects-filters]");
+        const projectCards = gsap.utils.toArray<HTMLElement>("#projects [data-project-card]");
+        const projectsEmptyState = gsap.utils.toArray<HTMLElement>("#projects [data-projects-empty]");
+
+        createScrollAnimation({
+          trigger: "#projects",
+          elements: projectsHeadingPieces,
+          start: "top 75%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 20, filter: "blur(14px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.9,
+            ease: "power3.out",
+            stagger: 0.08,
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -8,
+            filter: "blur(10px)",
+            duration: 0.45,
+            ease: "power2.out",
+            stagger: { each: 0.05, from: "end" },
+          },
+        });
+
+        createScrollAnimation({
+          trigger: "#projects",
+          elements: projectsFilters,
+          start: "top 75%",
+          end: "bottom 45%",
+          initial: { autoAlpha: 0, yPercent: 15, filter: "blur(12px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.9,
+            ease: "power3.out",
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -6,
+            filter: "blur(10px)",
+            duration: 0.45,
+            ease: "power2.out",
+          },
+        });
+
+        createIndividualScrollAnimations({
+          elements: projectCards,
+          start: "top 85%",
+          endForNext: "center center",
+          end: "bottom top",
+          initial: {
+            autoAlpha: 0,
+            yPercent: 10,
+            scale: 0.98,
+            filter: "blur(12px)",
+            transformOrigin: "center top",
+          },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            transformOrigin: "center top",
+            duration: 0.85,
+            ease: "power3.out",
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -4,
+            scale: 0.99,
+            filter: "blur(10px)",
+            transformOrigin: "center top",
+            duration: 0.5,
+            ease: "power2.out",
+          },
+        });
+
+        createScrollAnimation({
+          trigger: "#projects",
+          elements: projectsEmptyState,
+          start: "top 75%",
+          end: "bottom 40%",
+          initial: { autoAlpha: 0, yPercent: 10, filter: "blur(8px)" },
+          enter: {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.7,
+            ease: "power3.out",
+          },
+          leave: {
+            autoAlpha: 0,
+            yPercent: -6,
+            filter: "blur(8px)",
+            duration: 0.45,
+            ease: "power2.out",
+          },
+        });
+
+        ScrollTrigger.refresh();
+      }, containerRef);
+
+      return () => ctx.revert();
     },
     { scope: containerRef }
   );
@@ -148,14 +419,14 @@ export function PortfolioPage({ experiences, projects, socialLinks }: PortfolioP
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[#050505] text-white">
       <CursorSpotlight />
-      <div className="mx-auto flex w-full max-w-7xl items-start gap-12 px-4 py-10 lg:gap-16 lg:px-10">
+  <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 lg:min-h-screen lg:flex-row lg:items-start lg:gap-16 lg:px-10">
         <NavSidebar
           sections={SECTIONS}
           activeSection={activeSection}
           onNavigate={handleNavigate}
           socialLinks={socialLinks}
         />
-        <main className="relative z-10 flex-1 space-y-36 py-4 lg:py-8 xl:space-y-40">
+        <main className="relative z-10 flex-1 py-4 lg:py-8">
           <AboutSection />
           <ExperienceSection experiences={experiences} />
           <ProjectsSection
