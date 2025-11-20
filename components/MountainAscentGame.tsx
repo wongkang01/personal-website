@@ -3,10 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { experiences, projects } from '@/content/data';
 
-export default function MountainAscentGame() {
+type MountainAscentGameProps = {
+    onComplete?: () => void;
+};
+
+export default function MountainAscentGame({ onComplete }: MountainAscentGameProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [hasWon, setHasWon] = useState(false);
+    const [storyText, setStoryText] = useState<string>("The ascent begins. Every step is a lesson.");
+    const [storyOpacity, setStoryOpacity] = useState(0);
+    const [controlsOpacity, setControlsOpacity] = useState(1);
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -179,7 +186,7 @@ export default function MountainAscentGame() {
 
                 const mountainY = MOUNTAIN_CONFIG.height * t;
                 let currentRadius = MOUNTAIN_CONFIG.bottomRadius * (1 - t) + MOUNTAIN_CONFIG.topRadius * t;
-                currentRadius += rng(-0.5, 0.5);
+                currentRadius += rng(-0.6, 0.0); // Bias inwards to ensure contact
 
                 const group = new THREE.Group();
                 const mesh = new THREE.Mesh(platformGeo, platformMat);
@@ -192,7 +199,8 @@ export default function MountainAscentGame() {
                 support.rotation.z = Math.PI / 4;
                 group.add(support);
 
-                const offsetRadius = currentRadius + MOUNTAIN_CONFIG.platformSize.width * 0.15;
+                // Remove outward offset to keep platform centered on/inside mountain surface
+                const offsetRadius = currentRadius;
                 let platformY = mountainY + MOUNTAIN_CONFIG.platformSize.height / 2;
                 platformY += rng(-0.1, 0.1);
 
@@ -404,6 +412,59 @@ export default function MountainAscentGame() {
             );
         }
 
+        // --- Story Logic ---
+        const totalPlatforms = playerState.platformPositions.length;
+
+        // 9 Story Points distributed across the climb
+        const milestones = [
+            {
+                threshold: Math.floor(totalPlatforms * 0.05),
+                text: "It started with a fascination for tech products—how they shape the way we live and interact.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.15),
+                text: "That curiosity evolved into a drive to build complex systems and understand the financial engines behind them.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.25),
+                text: "I chose Computer Science to bridge the gap between product vision and technical reality.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.35),
+                text: "Summer 2022. That's when I wrote my first lines of code.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.45),
+                text: "In Nov 2024, I built machine learning models with Python to predict crop yields, learning how data drives sustainability.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.55),
+                text: "In early 2025, I delved into Android development, building Wandr which won the Singtel InfoSys Award.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.65),
+                text: "At AI Singapore, I engineered multi-agent systems using LangGraph and Gemini to automate complex workflows.",
+            },
+            {
+                threshold: Math.floor(totalPlatforms * 0.75),
+                text: "Now, I'm diving deep into Web3 and Finance, exploring the future of value.",
+            },
+            {
+                threshold: totalPlatforms - 3,
+                text: "My aspiration? To keep learning, keep building, and keep climbing mountains.",
+            }
+        ];
+
+        function updateStory() {
+            const currentIdx = playerState.currentPlatformIndex;
+            const activeMilestone = milestones.slice().reverse().find(m => currentIdx >= m.threshold);
+
+            if (activeMilestone) {
+                setStoryText(activeMilestone.text);
+                setStoryOpacity(1);
+            }
+        }
+
         function updatePlayer() {
             if (playerState.hasWon) return;
 
@@ -445,10 +506,15 @@ export default function MountainAscentGame() {
                 if (characterGroup.position.distanceTo(playerState.playerTargetPosition) < 0.1) {
                     playerState.playerMoving = false;
                     characterGroup.position.copy(playerState.playerTargetPosition);
+                    updateStory(); // Check story update on arrival
 
                     if (playerState.currentPlatformIndex === playerState.platformPositions.length - 1) {
                         playerState.hasWon = true;
-                        setHasWon(true);
+                        setControlsOpacity(0);
+                        setStoryOpacity(0);
+                        setTimeout(() => {
+                            if (onComplete) onComplete();
+                        }, 2000);
                     }
                 }
             } else {
@@ -509,7 +575,7 @@ export default function MountainAscentGame() {
         let animationId: number;
         function animate() {
             animationId = requestAnimationFrame(animate);
-            const dt = clock.getDelta();
+            const dt = Math.min(clock.getDelta(), 0.1);
 
             updatePlayer();
             updateSunrise(dt);
@@ -527,6 +593,9 @@ export default function MountainAscentGame() {
 
             renderer.render(scene, camera);
         }
+
+        // Initial story fade in
+        setTimeout(() => setStoryOpacity(1), 1000);
 
         animate();
 
@@ -568,39 +637,43 @@ export default function MountainAscentGame() {
             }
             renderer.dispose();
         };
-    }, []);
-
-    const handleReset = () => {
-        window.location.reload(); // Simple reset for now
-    };
+    }, [onComplete]);
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-[#dbebf0] font-sans select-none">
             <div ref={containerRef} className="w-full h-full block" />
 
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none flex flex-col justify-between p-5 box-border">
-                <div className="text-[#445] bg-white/90 p-4 rounded-xl text-sm shadow-lg max-w-[300px]">
-                    <h3 className="font-bold text-lg mb-2">How to Play</h3>
-                    <p className="mb-1"><span className="inline-block bg-[#eee] border border-[#ccc] rounded px-1.5 py-0.5 font-bold font-mono shadow-[0_2px_0_#bbb]">W</span> / <span className="inline-block bg-[#eee] border border-[#ccc] rounded px-1.5 py-0.5 font-bold font-mono shadow-[0_2px_0_#bbb]">Up</span> : Jump Up</p>
-                    <p className="mb-2"><span className="inline-block bg-[#eee] border border-[#ccc] rounded px-1.5 py-0.5 font-bold font-mono shadow-[0_2px_0_#bbb]">S</span> / <span className="inline-block bg-[#eee] border border-[#ccc] rounded px-1.5 py-0.5 font-bold font-mono shadow-[0_2px_0_#bbb]">Down</span> : Jump Down</p>
-                    <hr className="border-0 border-t border-[#ddd] my-2" />
-                    <p className="mb-1"><b>Camera:</b> Drag to Rotate, Scroll to Zoom</p>
-                    <small className="text-gray-600">Reach the flag at the peak!</small>
+            {/* Story Overlay - Bottom Center */}
+            <div
+                className="absolute bottom-12 left-0 w-full flex justify-center pointer-events-none transition-opacity duration-1000"
+                style={{ opacity: storyOpacity }}
+            >
+                <div className="bg-white/90 backdrop-blur-md text-gray-900 px-8 py-4 rounded-xl max-w-3xl text-center shadow-xl border border-white/20 mx-4">
+                    <p className="text-lg md:text-xl font-medium leading-relaxed tracking-wide">
+                        {storyText}
+                    </p>
                 </div>
             </div>
 
-            {hasWon && (
-                <div className="absolute top-5 right-5 bg-white/95 p-8 rounded-2xl text-center shadow-2xl pointer-events-auto animate-in fade-in zoom-in duration-500 origin-top-right z-10">
-                    <h1 className="m-0 mb-2 text-[#2d4c1e] text-2xl font-bold">Summit Reached! 🚩</h1>
-                    <p className="mb-4 text-gray-700">You conquered the mountain.</p>
-                    <button
-                        onClick={handleReset}
-                        className="bg-[#e63946] text-white border-none px-5 py-2.5 text-base rounded-lg cursor-pointer hover:bg-[#c92a37] transition-colors"
-                    >
-                        Play Again
-                    </button>
+            {/* Controls Hint - Bottom Left (Shifted up slightly to avoid overlap if needed, or keep as is) */}
+            <div
+                className="absolute bottom-8 left-8 pointer-events-none transition-opacity duration-500 hidden md:block"
+                style={{ opacity: controlsOpacity }}
+            >
+                <div className="bg-white/60 backdrop-blur-sm p-3 rounded-lg shadow-sm border border-white/40 text-gray-700 scale-90 origin-bottom-left">
+                    <div className="flex items-center gap-3 text-xs font-semibold">
+                        <div className="flex flex-col items-center gap-0.5">
+                            <span className="bg-white border border-gray-200 rounded px-1.5 py-0.5 font-mono shadow-sm">W</span>
+                            <span className="text-[9px] uppercase tracking-wider opacity-70">Up</span>
+                        </div>
+                        <div className="h-6 w-px bg-gray-300/50"></div>
+                        <div className="flex flex-col items-center gap-0.5">
+                            <span className="bg-white border border-gray-200 rounded px-1.5 py-0.5 font-mono shadow-sm">S</span>
+                            <span className="text-[9px] uppercase tracking-wider opacity-70">Down</span>
+                        </div>
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

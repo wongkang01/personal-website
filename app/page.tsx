@@ -1,9 +1,9 @@
-import { PortfolioPage } from "@/components/portfolio-page";
+import HomeClient from "@/components/HomeClient";
 import { experiences, projects, socialLinks } from "@/content/data";
 
 export default function Home() {
   return (
-    <PortfolioPage
+    <HomeClient
       experiences={experiences}
       projects={projects}
       socialLinks={socialLinks}
