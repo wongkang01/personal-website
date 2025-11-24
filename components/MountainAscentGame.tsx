@@ -143,20 +143,29 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
         function createMountain() {
             const height = MOUNTAIN_CONFIG.height;
             const radius = MOUNTAIN_CONFIG.bottomRadius;
-            const segments = 9;
+            const segments = 12;
 
-            const geometry = new THREE.ConeGeometry(radius, height, segments, 6);
+            // Deterministic noise to prevent gaps at seams
+            const getDisplacement = (x: number, y: number, z: number) => {
+                return {
+                    x: Math.sin(y * 0.5 + z * 0.8) * 0.6 + Math.cos(x * 1.2) * 0.3,
+                    z: Math.cos(y * 0.5 + x * 0.8) * 0.6 + Math.sin(z * 1.2) * 0.3
+                };
+            };
+
+            // --- Top Mountain ---
+            const geometry = new THREE.ConeGeometry(radius, height, segments, 8);
             const posAttribute = geometry.attributes.position;
             const vertex = new THREE.Vector3();
 
             for (let i = 0; i < posAttribute.count; i++) {
                 vertex.fromBufferAttribute(posAttribute, i);
-                if (vertex.y > -height / 2 + 0.5) {
-                    const noise = 0.8;
-                    vertex.x += rng(-noise, noise);
-                    vertex.z += rng(-noise, noise);
-                    vertex.y += rng(-0.3, 0.3);
-                }
+                
+                // Apply deterministic displacement
+                const disp = getDisplacement(vertex.x, vertex.y, vertex.z);
+                vertex.x += disp.x;
+                vertex.z += disp.z;
+                
                 posAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
             }
 
@@ -167,18 +176,26 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
             const colors: number[] = [];
 
             const colorGrass = new THREE.Color(COLORS.mountainGrass);
+            const colorRock = new THREE.Color(0x7a7a7a);
             const colorSnow = new THREE.Color(COLORS.mountainSnow);
 
             for (let i = 0; i < count; i++) {
                 const y = pos.getY(i);
-                const hNormalized = (y + height / 2) / height;
+                // Local y is from -height/2 to +height/2
+                const h = y + height / 2; // 0 to height
+                
                 const mixColor = new THREE.Color();
-                let snowThreshold = 0.55;
-                let snowFactor = Math.max(0, Math.min(1, (hNormalized - snowThreshold) / (1 - snowThreshold - 0.1)));
-
-                mixColor.copy(colorGrass);
-                mixColor.lerp(colorSnow, snowFactor);
-                mixColor.multiplyScalar(rng(0.98, 1.02));
+                
+                if (h < 5) {
+                    mixColor.copy(colorGrass);
+                } else if (h < 12) {
+                    const t = (h - 5) / 7;
+                    mixColor.copy(colorGrass).lerp(colorRock, t);
+                } else {
+                    const t = Math.min(1, (h - 12) / 6);
+                    mixColor.copy(colorRock).lerp(colorSnow, t);
+                }
+                
                 colors.push(mixColor.r, mixColor.g, mixColor.b);
             }
 
@@ -288,14 +305,123 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
         }
 
         function createEnvironment() {
-            const ground = new THREE.Mesh(
-                new THREE.CylinderGeometry(30, 30, 2, 32),
-                new THREE.MeshStandardMaterial({ color: COLORS.mountainGrass, flatShading: true })
-            );
-            ground.position.y = -1;
+            // --- 1. Ground Surface (Grid based for better deformation) ---
+            const planeSize = 64;
+            const segments = 96; // High resolution for smooth river
+            const groundGeo = new THREE.PlaneGeometry(planeSize, planeSize, segments, segments);
+            groundGeo.rotateX(-Math.PI / 2);
+            
+            const pos = groundGeo.attributes.position;
+            const vertex = new THREE.Vector3();
+            
+            // River Path Function: z = A * sin(B * x)
+            // Flows roughly along positive X axis
+            const getRiverZ = (x: number) => 8 * Math.sin(x * 0.15);
+            const riverStartX = 10;
+            const riverWidth = 3.5;
+            const islandRadius = 29;
+
+            // Filter faces to create a circular island
+            const index = groundGeo.index;
+            if (index) {
+                const newIndices: number[] = [];
+                for (let i = 0; i < index.count; i += 3) {
+                    const a = index.getX(i);
+                    const b = index.getX(i + 1);
+                    const c = index.getX(i + 2);
+                    
+                    const vA = new THREE.Vector3().fromBufferAttribute(pos, a);
+                    const vB = new THREE.Vector3().fromBufferAttribute(pos, b);
+                    const vC = new THREE.Vector3().fromBufferAttribute(pos, c);
+                    
+                    // Check if face centroid is within radius
+                    const centroid = vA.add(vB).add(vC).divideScalar(3);
+                    const r = Math.sqrt(centroid.x * centroid.x + centroid.z * centroid.z);
+                    
+                    if (r < islandRadius) {
+                        newIndices.push(a, b, c);
+                    }
+                }
+                groundGeo.setIndex(newIndices);
+            }
+
+            for (let i = 0; i < pos.count; i++) {
+                vertex.fromBufferAttribute(pos, i);
+                
+                // Base terrain noise
+                vertex.y = rng(-0.2, 0.2);
+                
+                // River Carving
+                if (vertex.x > riverStartX) {
+                    const riverZ = getRiverZ(vertex.x);
+                    const distToRiver = Math.abs(vertex.z - riverZ);
+                    
+                    if (distToRiver < riverWidth) {
+                        // Smooth depression using cosine
+                        const depth = Math.cos((distToRiver / riverWidth) * Math.PI / 2);
+                        vertex.y -= depth * 1.8;
+                    }
+                }
+                pos.setXYZ(i, vertex.x, vertex.y, vertex.z);
+            }
+            
+            // Fix normals for lighting
+            groundGeo.computeVertexNormals();
+            
+            // Create Ground Mesh
+            const groundMat = new THREE.MeshStandardMaterial({ 
+                color: COLORS.mountainGrass, 
+                flatShading: true,
+                roughness: 0.8
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
             ground.receiveShadow = true;
             scene.add(ground);
 
+            // --- 2. Cliff Walls (Cylinder to hide the hollow bottom) ---
+            const cliffGeo = new THREE.CylinderGeometry(islandRadius - 0.5, islandRadius - 0.5, 5, 64, 1, true);
+            const cliffMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, flatShading: true });
+            const cliff = new THREE.Mesh(cliffGeo, cliffMat);
+            cliff.position.y = -2.5; // Top at 0, bottom at -5
+            scene.add(cliff);
+
+            // --- 3. Water Surface ---
+            // Create a strip of water following the river path
+            const waterPoints: THREE.Vector3[] = [];
+            // On island
+            for (let x = riverStartX; x <= islandRadius - 1; x += 0.5) {
+                waterPoints.push(new THREE.Vector3(x, -0.8, getRiverZ(x)));
+            }
+            // Waterfall
+            const waterfallStart = islandRadius - 1;
+            for (let i = 0; i <= 20; i++) {
+                const t = i / 20;
+                // Keep some forward momentum but drop sharply
+                const x = waterfallStart + t * 1.5; 
+                // Accelerate downwards to go well below the island (y=-5)
+                const y = -0.8 - (t * t) * 25; 
+                const z = getRiverZ(x);
+                waterPoints.push(new THREE.Vector3(x, y, z));
+            }
+
+            const riverCurve = new THREE.CatmullRomCurve3(waterPoints);
+            
+            // Use TubeGeometry for the water body, scaled flat
+            const tubeRadius = 2.5;
+            const waterGeo = new THREE.TubeGeometry(riverCurve, 64, tubeRadius, 8, false);
+            const waterMat = new THREE.MeshStandardMaterial({
+                color: 0x4fa4b8,
+                roughness: 0.1,
+                metalness: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+            const water = new THREE.Mesh(waterGeo, waterMat);
+            // Flatten the tube to make it look like a surface
+            water.scale.set(1, 0.1, 1); 
+            scene.add(water);
+
+            // --- 4. Trees ---
             const treeGeo = new THREE.Group();
             const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.3, 0.8, 5), new THREE.MeshStandardMaterial({ color: 0x5c4033, flatShading: true }));
             trunk.position.y = 0.4;
@@ -306,11 +432,31 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
             treeGeo.add(trunk);
             treeGeo.add(leaves);
 
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 90; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = rng(16, 28);
+                const r = rng(8, 28);
+                
+                const x = Math.cos(angle) * r;
+                const z = Math.sin(angle) * r;
+                
+                // Avoid River
+                let inRiver = false;
+                if (x > riverStartX) {
+                    const riverZ = getRiverZ(x);
+                    if (Math.abs(z - riverZ) < riverWidth + 1) {
+                        inRiver = true;
+                    }
+                }
+                if (inRiver) continue;
+
+                let h = 0;
+                if (r < MOUNTAIN_CONFIG.bottomRadius) {
+                    h = MOUNTAIN_CONFIG.height * (1 - r / MOUNTAIN_CONFIG.bottomRadius);
+                    h -= 0.5;
+                }
+                
                 const tree = treeGeo.clone();
-                tree.position.set(Math.cos(angle) * r, 0, Math.sin(angle) * r);
+                tree.position.set(x, h + rng(-0.2, 0.2), z);
                 tree.scale.setScalar(rng(0.6, 1.2));
                 scene.add(tree);
             }

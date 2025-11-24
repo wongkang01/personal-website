@@ -147,7 +147,7 @@ export function ProjectsSection({
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col gap-4 p-6">
-                  <p className="text-sm uppercase tracking-[0.3em] text-zinc-400">Focus</p>
+                  <p className="text-sm uppercase tracking-[0.3em] text-zinc-400">{project.focus}</p>
                   <p className="text-base leading-relaxed text-zinc-200">
                     {project.description}
                   </p>

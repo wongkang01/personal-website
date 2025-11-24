@@ -37,6 +37,7 @@ export type Project = {
   problem: string;
   approach: string;
   impact: string;
+  focus: string;
 };
 
 export const socialLinks: SocialLink[] = [
@@ -150,6 +151,7 @@ export const projects: Project[] = [
       "Designed a relational schema with Drizzle ORM, exposed it through typed routers, and orchestrated Supabase Postgres with Clerk authentication to keep the experience real-time and secure.",
     impact:
       "Early pilot testers reduced planning time by 40% and surfaced prerequisite issues before course bidding opened.",
+    focus: "Full Stack Web Dev",
   },
   {
     slug: "optistaff",
@@ -178,6 +180,7 @@ export const projects: Project[] = [
       "Modeled constraints in PostgreSQL, layered Prisma data services, and built scheduling UI flows that surface conflicts before publishing.",
     impact:
       "Cut manual reconciliation time per shift from 45 minutes to under 10 in pilot tests.",
+    focus: "Full Stack Web Dev",
   },
   {
     slug: "adminless",
@@ -206,6 +209,7 @@ export const projects: Project[] = [
       "Designed a conversational marketing site with story-driven sections and integrated demo booking components.",
     impact:
       "Beta clinics cut phone queue backlog by 60% while improving CSAT.",
+    focus: "AI & Entrepreneurship",
   },
   {
     slug: "wandr",
@@ -234,6 +238,7 @@ export const projects: Project[] = [
       "Married social feed mechanics with travel itineraries and built synchronization flows via Firebase.",
     impact:
       "User study participants reported 2× faster trip planning and higher engagement.",
+    focus: "Android App Development",
   },
   {
     slug: "crop-yield",
@@ -267,5 +272,6 @@ export const projects: Project[] = [
       "Ingested multi-source data, standardized it, and trained regression models with gradient descent.",
     impact:
       "Model achieved sub-5% MAPE on validation data, informing planning conversations.",
+    focus: "Machine Learning",
   },
 ];
