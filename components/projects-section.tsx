@@ -177,7 +177,7 @@ export function ProjectsSection({
                           href={`/projects/${project.slug}`}
                           className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white transition hover:border-teal-400/60"
                         >
-                          Case study ↗
+                          More info ↗
                         </Link>
                         {project.links.map((link) => (
                           <Link

@@ -27,8 +27,9 @@ export function NavSidebar({
   socialLinks,
 }: NavSidebarProps) {
   return (
-  <aside className="sticky top-1/2 z-30 flex w-full max-w-xs -translate-y-1/2 transform-gpu flex-col justify-between rounded-[32px] border border-white/10 bg-white/5 p-8 text-white shadow-[0_25px_120px_-40px_rgba(15,118,110,0.8)] backdrop-blur-xl dark:bg-black/30">
-      <div className="space-y-10">
+    <aside className="sticky top-0 z-30 flex h-screen w-full max-w-xs shrink-0 flex-col justify-start pt-8 lg:pt-24 self-start">
+      <div className="flex flex-col justify-between rounded-[32px] border border-white/10 bg-white/5 p-8 text-white shadow-[0_25px_120px_-40px_rgba(15,118,110,0.8)] backdrop-blur-xl dark:bg-black/30">
+        <div className="space-y-10">
         <div className="flex items-center gap-4">
           <Image
             src="/images/logo.png"
@@ -92,6 +93,7 @@ export function NavSidebar({
             );
           })}
         </div>
+      </div>
       </div>
     </aside>
   );

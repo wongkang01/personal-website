@@ -11,12 +11,36 @@ type MountainAscentGameProps = {
 
 export default function MountainAscentGame({ onComplete }: MountainAscentGameProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const [storyText, setStoryText] = useState<string>("The ascent begins. Every step is a lesson.");
     const [storyOpacity, setStoryOpacity] = useState(0);
     const [controlsOpacity, setControlsOpacity] = useState(1);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [hasInteracted, setHasInteracted] = useState(false);
+
+    // Refs to access latest state inside useEffect without triggering re-runs
+    const isPlayingRef = useRef(isPlaying);
+    const onCompleteRef = useRef(onComplete);
+    const controlsRef = useRef<OrbitControls | null>(null);
+
+    useEffect(() => {
+        isPlayingRef.current = isPlaying;
+        if (controlsRef.current) {
+            controlsRef.current.enabled = isPlaying;
+        }
+    }, [isPlaying]);
+
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
 
     useEffect(() => {
         if (!containerRef.current) return;
+
+        // Clear any existing children to prevent duplicates
+        while (containerRef.current.firstChild) {
+            containerRef.current.removeChild(containerRef.current.firstChild);
+        }
 
         // --- Configuration ---
         const COLORS = {
@@ -76,11 +100,14 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
         scene.background = new THREE.Color(COLORS.sky);
         scene.fog = new THREE.Fog(COLORS.sky, 20, 70);
 
-        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+
+        const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
         camera.position.set(20, 15, 20);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         containerRef.current.appendChild(renderer.domElement);
@@ -88,10 +115,12 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
+        controls.enabled = isPlayingRef.current;
         controls.minDistance = 5;
         controls.maxDistance = 40;
         controls.maxPolarAngle = Math.PI / 2 - 0.05;
         controls.enablePan = true;
+        controlsRef.current = controls;
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
@@ -588,6 +617,7 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
                 const targetPos = new THREE.Vector3().copy(characterGroup.position);
                 targetPos.y += 2;
                 controls.target.lerp(targetPos, 0.05);
+                controls.enabled = isPlayingRef.current; // Ensure controls stay synced with state
                 controls.update();
             }
 
@@ -601,7 +631,14 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
 
         // --- Event Listeners ---
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (playerState.playerMoving || playerState.hasWon) return;
+            if (!isPlayingRef.current || playerState.hasWon) return;
+
+            // Prevent default scrolling for game keys
+            if (['ArrowUp', 'ArrowDown', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (playerState.playerMoving) return;
 
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                 if (playerState.currentPlatformIndex < playerState.platformPositions.length - 1) {
@@ -618,29 +655,50 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        const wrapper = wrapperRef.current;
+        if (wrapper) {
+            wrapper.addEventListener('keydown', handleKeyDown);
+        }
 
         const handleResize = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            if (!containerRef.current) return;
+            const width = containerRef.current.clientWidth;
+            const height = containerRef.current.clientHeight;
+
+            camera.aspect = width / height;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(width, height);
         };
-        window.addEventListener('resize', handleResize);
+
+        const resizeObserver = new ResizeObserver(() => handleResize());
+        resizeObserver.observe(containerRef.current);
 
         // Cleanup
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('resize', handleResize);
+            if (wrapper) {
+                wrapper.removeEventListener('keydown', handleKeyDown);
+            }
+            resizeObserver.disconnect();
             cancelAnimationFrame(animationId);
             if (containerRef.current) {
                 containerRef.current.removeChild(renderer.domElement);
             }
             renderer.dispose();
         };
-    }, [onComplete]);
+    }, []); // Run only once on mount
+
+    const handleStart = () => {
+        setIsPlaying(true);
+        setHasInteracted(true);
+        wrapperRef.current?.focus();
+    };
 
     return (
-        <div className="relative w-screen h-screen overflow-hidden bg-[#dbebf0] font-sans select-none">
+        <div 
+            ref={wrapperRef}
+            tabIndex={0}
+            className="relative w-full h-full overflow-hidden bg-[#dbebf0] font-sans select-none outline-none"
+        >
             <div ref={containerRef} className="w-full h-full block" />
 
             {/* Story Overlay - Bottom Center */}
@@ -674,6 +732,25 @@ export default function MountainAscentGame({ onComplete }: MountainAscentGamePro
                     </div>
                 </div>
             </div>
+            {/* Start Overlay */}
+            {!isPlaying && (
+                <div
+                    className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/20 backdrop-blur-[2px] transition-all duration-500 cursor-pointer hover:bg-black/30"
+                    onClick={handleStart}
+                >
+                    <div className="group flex flex-col items-center gap-4 p-8 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-transform duration-300 hover:scale-105">
+                        <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
+                            My Story
+                        </h1>
+                        <p className="text-white/90 text-lg font-medium tracking-wide">
+                            {hasInteracted ? "Click to Resume" : "Click to Start Journey"}
+                        </p>
+                        <div className="mt-2 px-6 py-2 rounded-full bg-white/20 border border-white/30 text-white text-sm font-semibold uppercase tracking-widest transition-colors group-hover:bg-white/30">
+                            Play
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -9,7 +9,9 @@ import { ExperienceSection } from "./experience-section";
 import { ProjectsSection } from "./projects-section";
 import { NavSidebar } from "./nav-sidebar";
 import { CursorSpotlight } from "./cursor-spotlight";
+import { GameCard } from "./game-card";
 import { Experience, Project, SocialLink } from "@/content/data";
+import { ChevronDown } from "lucide-react";
 
 const SECTIONS = [
   { id: "about", label: "About" },
@@ -30,6 +32,7 @@ export function PortfolioPage({ experiences, projects, socialLinks }: PortfolioP
   const [activeSection, setActiveSection] = useState<string>(SECTIONS[0].id);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const sectionVisibility = useRef<Record<string, number>>(
     SECTIONS.reduce(
       (acc, section) => {
@@ -39,6 +42,19 @@ export function PortfolioPage({ experiences, projects, socialLinks }: PortfolioP
       {} as Record<string, number>
     )
   );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setShowScrollIndicator(false);
+      } else {
+        setShowScrollIndicator(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const tags = useMemo(
     () => Array.from(new Set(projects.flatMap((project) => project.tags))).sort(),
@@ -419,25 +435,41 @@ export function PortfolioPage({ experiences, projects, socialLinks }: PortfolioP
   return (
     <div ref={containerRef} className="relative min-h-screen bg-[#050505] text-white">
       <CursorSpotlight />
-  <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-4 py-10 lg:min-h-screen lg:flex-row lg:items-start lg:gap-16 lg:px-10">
-        <NavSidebar
-          sections={SECTIONS}
-          activeSection={activeSection}
-          onNavigate={handleNavigate}
-          socialLinks={socialLinks}
-        />
-        <main className="relative z-10 flex-1 py-4 lg:py-8">
-          <AboutSection />
-          <ExperienceSection experiences={experiences} />
-          <ProjectsSection
-            projects={filteredProjects}
-            tags={tags}
-            selectedTag={selectedTag}
-            onTagChange={setSelectedTag}
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
+      
+      {/* Hero Section with Game Card */}
+      <div className="relative flex min-h-screen w-full flex-col items-center justify-center px-4 lg:px-10">
+        <div className="w-full max-w-7xl">
+          <GameCard />
+        </div>
+        
+        <div className={`absolute bottom-12 flex flex-col items-center gap-2 animate-bounce text-zinc-500 transition-opacity duration-500 ${showScrollIndicator ? 'opacity-100' : 'opacity-0'}`}>
+          <span className="text-xs uppercase tracking-widest">Scroll</span>
+          <ChevronDown size={20} />
+        </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-7xl px-4 pb-10 lg:px-10">
+        {/* Sidebar + Content Layout */}
+        <div className="flex w-full flex-col lg:flex-row lg:items-start lg:gap-16">
+          <NavSidebar
+            sections={SECTIONS}
+            activeSection={activeSection}
+            onNavigate={handleNavigate}
+            socialLinks={socialLinks}
           />
-        </main>
+          <main className="relative z-10 flex-1 pb-4 lg:pb-8">
+            <AboutSection />
+            <ExperienceSection experiences={experiences} />
+            <ProjectsSection
+              projects={filteredProjects}
+              tags={tags}
+              selectedTag={selectedTag}
+              onTagChange={setSelectedTag}
+              searchTerm={searchTerm}
+              onSearchTermChange={setSearchTerm}
+            />
+          </main>
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ export function AboutSection() {
     <section
       id="about"
       data-section="about"
-      className="section-shell min-h-screen items-center gap-10 py-16"
+      className="section-shell gap-10 pb-16 pt-8 lg:pt-24"
     >
       <div data-about-copy className="space-y-6 max-w-2xl">
         <p className="text-sm uppercase tracking-[0.4em] text-teal-300">About</p>
